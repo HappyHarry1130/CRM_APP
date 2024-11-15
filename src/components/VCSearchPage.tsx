@@ -8,6 +8,7 @@ import { FilterState, VCContact, Note, Task } from "../types";
 import { ContactDetailModal } from "./ContactDetailModal";
 import firebase from "../utilies/firebase/firebaseConfig";
 import { db } from "../utilies/firebase/firebaseConfig";
+import toast from "react-hot-toast";
 
 interface VCSearchPageProps {
   onAddToPipeline?: (contact: VCContact) => void;
@@ -115,7 +116,7 @@ export function VCSearchPage({
       console.log("stage", stage);
       try {
         await performSearch(
-          "venture capital technology investment",
+          `Investor in ${sector} with ${stage} stage`,
           "vc",
           sector,
           stage

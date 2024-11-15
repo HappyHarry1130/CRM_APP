@@ -78,7 +78,8 @@ export function Dashboard({
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              company_description: query,
+              company_description:
+                "We are a startup in renewable energy, focusing on solar panels.",
             }),
           }
         );
@@ -91,7 +92,8 @@ export function Dashboard({
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              company_description: query,
+              company_description:
+                "We are a startup in renewable energy, focusing on solar panels.",
             }),
           }
         );
