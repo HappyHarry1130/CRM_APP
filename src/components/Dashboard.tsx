@@ -71,7 +71,7 @@ export function Dashboard({
         console.log("API URL:", import.meta.env.VITE_API_URL);
 
         const newsResponse = await fetch(
-          `${import.meta.env.VITE_API_URL}/dashboard/news`,
+          `https://api.iylavista.com/api/dashboard/news`,
           {
             method: "POST",
             headers: {
@@ -85,7 +85,7 @@ export function Dashboard({
         );
 
         const pulseResponse = await fetch(
-          `${import.meta.env.VITE_API_URL}/dashboard/pulse`,
+          `https://api.iylavista.com/api/dashboard/pulse`,
           {
             method: "POST",
             headers: {
