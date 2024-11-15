@@ -43,19 +43,9 @@ export function AuthPage({ onLogin }: AuthPageProps) {
                   industry: userData.company.industry,
                   stage: userData.company.stage,
                   description: userData.company.description || "",
-                  location: {
-                    city:
-                      userData.company.location?.split(",")[0]?.trim() || "",
-                    state:
-                      userData.company.location?.split(",")[1]?.trim() || "",
-                    country:
-                      userData.company.location?.split(",")[2]?.trim() || "",
-                  },
-                  problem: userData.company.problem,
-                  solution: userData.company.solution,
-                  uniqueValue: userData.company.uniqueValue,
-                  competition: userData.company.competition,
+                  location: userData.company.location,
                 },
+                companyDetails: userData.companyDetails,
                 createdAt:
                   userData.createdAt?.toDate().toISOString() ||
                   new Date().toISOString(),

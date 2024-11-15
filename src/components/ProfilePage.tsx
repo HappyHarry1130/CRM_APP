@@ -38,17 +38,17 @@ export function ProfilePage({
   const [isEditing, setIsEditing] = useState(false);
   const [editedInfo, setEditedInfo] = useState({
     companyName: user.company.name,
-    location: user.company.location.city + ", " + user.company.location.state,
+    location: user.company.location,
     stage: user.company.stage,
     industry: user.company.industry,
     website: user.company.website,
   });
 
   const [editedPitch, setEditedPitch] = useState({
-    problem: user.company.problem,
-    solution: user.company.solution,
-    "unique-value": user.company.uniqueValue,
-    competition: user.company.competition,
+    problem: user.companyDetails.problem,
+    solution: user.companyDetails.solution,
+    "unique-value": user.companyDetails.uniqueValue,
+    competition: user.companyDetails.competition,
   });
 
   const [tempInfo, setTempInfo] = useState(editedInfo);
