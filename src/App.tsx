@@ -166,7 +166,6 @@ function App() {
   };
 
   const handleLogin = (userData: User) => {
-    // Save user data to localStorage when logging in
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
   };
@@ -174,10 +173,10 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("activeRoute");
-    localStorage.removeItem("tasks"); // Add this line
+    localStorage.removeItem("tasks");
     setUser(null);
     setActiveRoute("dashboard");
-    setTasks([]); // Reset tasks state
+    setTasks([]);
   };
 
   const handleAddTask = async (
@@ -295,7 +294,6 @@ function App() {
   };
 
   const handleAddToPipeline = async (investor: VCContact | MediaContact) => {
-    // console.log(investor);
     console.log("user", user);
     const firebaseId = user.id;
     investor.status = "new";
@@ -447,7 +445,7 @@ function App() {
 
     switch (activeRoute) {
       case "dashboard":
-        return <Dashboard onRouteChange={setActiveRoute} />;
+        return <Dashboard user={user} onRouteChange={setActiveRoute} />;
       case "vc":
         return (
           <VCSearchPage

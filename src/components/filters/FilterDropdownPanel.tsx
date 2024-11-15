@@ -46,7 +46,6 @@ export function FilterDropdownPanel({
       <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
         <div className="p-4 space-y-4">
           {type === "vc" ? (
-            // VC Filters
             <>
               <FilterGroup
                 title="Investment Stage"
@@ -74,7 +73,6 @@ export function FilterDropdownPanel({
               />
             </>
           ) : (
-            // Media Filters
             <>
               <FilterGroup
                 title="Media Type"

@@ -1,30 +1,54 @@
-import React, { useState } from 'react';
-import { Building2, MapPin, Target, Globe, Rocket, Edit, Sparkles, Check, X } from 'lucide-react';
+import React, { useState } from "react";
+import {
+  Building2,
+  MapPin,
+  Target,
+  Globe,
+  Rocket,
+  Edit,
+  Sparkles,
+  Check,
+  X,
+} from "lucide-react";
 
-const STAGES = ['Pre-seed', 'Seed', 'Series A', 'Series B', 'Series C', 'Series D'];
-
-const PITCH_SECTIONS = [
-  { id: 'problem', title: 'Problem' },
-  { id: 'solution', title: 'Solution' },
-  { id: 'unique-value', title: 'Unique Value & Features' },
-  { id: 'competition', title: 'Competition' }
+const STAGES = [
+  "Pre-seed",
+  "Seed",
+  "Series A",
+  "Series B",
+  "Series C",
+  "Series D",
 ];
 
-export function ProfilePage() {
+const PITCH_SECTIONS = [
+  { id: "problem", title: "Problem" },
+  { id: "solution", title: "Solution" },
+  { id: "unique-value", title: "Unique Value & Features" },
+  { id: "competition", title: "Competition" },
+];
+
+export function ProfilePage({
+  user,
+  onUpdateUser,
+}: {
+  user: any;
+  onUpdateUser: any;
+}) {
+  console.log(user);
   const [isEditing, setIsEditing] = useState(false);
   const [editedInfo, setEditedInfo] = useState({
-    companyName: "TechVision AI",
-    location: "San Francisco, CA",
-    stage: "Seed",
-    industry: "Artificial Intelligence / Enterprise Software",
-    website: "https://techvision.ai"
+    companyName: user.company.name,
+    location: user.company.location.city + ", " + user.company.location.state,
+    stage: user.company.stage,
+    industry: user.company.industry,
+    website: user.company.website,
   });
 
   const [editedPitch, setEditedPitch] = useState({
-    problem: "Enterprise teams struggle with unstructured data analysis, spending 60% of their time manually processing documents and communications.",
-    solution: "Our AI-powered platform automatically processes, categorizes, and extracts insights from enterprise documents and communications in real-time.",
-    'unique-value': "• Contextual AI Understanding: Our models understand relationships between documents\n• 5x Faster Processing: Automated analysis reduces manual work\n• Enterprise-Grade Security: SOC 2 Type II certified with end-to-end encryption\n• Custom Workflows: Tailored to each organization's specific needs",
-    competition: "Unlike traditional OCR solutions, our AI models understand context and relationships between different documents, providing 5x more accurate insights."
+    problem: user.company.problem,
+    solution: user.company.solution,
+    "unique-value": user.company.uniqueValue,
+    competition: user.company.competition,
   });
 
   const [tempInfo, setTempInfo] = useState(editedInfo);
@@ -43,26 +67,31 @@ export function ProfilePage() {
   };
 
   const handlePitchChange = (sectionId: string, value: string) => {
-    setTempPitch(prev => ({
+    setTempPitch((prev) => ({
       ...prev,
-      [sectionId]: value
+      [sectionId]: value,
     }));
   };
 
-  const renderField = (icon: React.ReactNode, label: string, value: string, field: keyof typeof tempInfo) => {
+  const renderField = (
+    icon: React.ReactNode,
+    label: string,
+    value: string,
+    field: keyof typeof tempInfo
+  ) => {
     const Icon = icon;
     return (
       <div className="flex items-center gap-3">
-        <div className="bg-blue-50 p-2 rounded-lg">
-          {icon}
-        </div>
+        <div className="bg-blue-50 p-2 rounded-lg">{icon}</div>
         <div className="flex-1">
           <p className="text-sm text-gray-500">{label}</p>
           {isEditing ? (
-            field === 'stage' ? (
+            field === "stage" ? (
               <select
                 value={tempInfo[field]}
-                onChange={(e) => setTempInfo(prev => ({ ...prev, [field]: e.target.value }))}
+                onChange={(e) =>
+                  setTempInfo((prev) => ({ ...prev, [field]: e.target.value }))
+                }
                 className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               >
                 {STAGES.map((stage) => (
@@ -75,15 +104,17 @@ export function ProfilePage() {
               <input
                 type="text"
                 value={tempInfo[field]}
-                onChange={(e) => setTempInfo(prev => ({ ...prev, [field]: e.target.value }))}
+                onChange={(e) =>
+                  setTempInfo((prev) => ({ ...prev, [field]: e.target.value }))
+                }
                 className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             )
-          ) : field === 'website' ? (
-            <a 
+          ) : field === "website" ? (
+            <a
               href={value}
               target="_blank"
-              rel="noopener noreferrer" 
+              rel="noopener noreferrer"
               className="font-medium text-blue-600 hover:text-blue-800"
             >
               {value}
@@ -129,16 +160,43 @@ export function ProfilePage() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Business Information</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">
+          Business Information
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
-            {renderField(<Building2 className="w-5 h-5 text-blue-600" />, "Company Name", editedInfo.companyName, "companyName")}
-            {renderField(<MapPin className="w-5 h-5 text-blue-600" />, "Location", editedInfo.location, "location")}
-            {renderField(<Target className="w-5 h-5 text-blue-600" />, "Stage", editedInfo.stage, "stage")}
+            {renderField(
+              <Building2 className="w-5 h-5 text-blue-600" />,
+              "Company Name",
+              editedInfo.companyName,
+              "companyName"
+            )}
+            {renderField(
+              <MapPin className="w-5 h-5 text-blue-600" />,
+              "Location",
+              editedInfo.location,
+              "location"
+            )}
+            {renderField(
+              <Target className="w-5 h-5 text-blue-600" />,
+              "Stage",
+              editedInfo.stage,
+              "stage"
+            )}
           </div>
           <div className="space-y-4">
-            {renderField(<Sparkles className="w-5 h-5 text-blue-600" />, "Industry", editedInfo.industry, "industry")}
-            {renderField(<Globe className="w-5 h-5 text-blue-600" />, "Website", editedInfo.website, "website")}
+            {renderField(
+              <Sparkles className="w-5 h-5 text-blue-600" />,
+              "Industry",
+              editedInfo.industry,
+              "industry"
+            )}
+            {renderField(
+              <Globe className="w-5 h-5 text-blue-600" />,
+              "Website",
+              editedInfo.website,
+              "website"
+            )}
           </div>
         </div>
       </div>
@@ -152,18 +210,27 @@ export function ProfilePage() {
         </div>
         <div className="space-y-6">
           {PITCH_SECTIONS.map((section) => (
-            <div key={section.id} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
-              <h4 className="font-medium text-gray-900 mb-2">{section.title}</h4>
+            <div
+              key={section.id}
+              className="border-b border-gray-100 last:border-0 pb-4 last:pb-0"
+            >
+              <h4 className="font-medium text-gray-900 mb-2">
+                {section.title}
+              </h4>
               {isEditing ? (
                 <textarea
                   value={tempPitch[section.id]}
-                  onChange={(e) => handlePitchChange(section.id, e.target.value)}
+                  onChange={(e) =>
+                    handlePitchChange(section.id, e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
                   rows={4}
                   placeholder={`Enter ${section.title.toLowerCase()}...`}
                 />
               ) : (
-                <p className="text-gray-600 whitespace-pre-line">{editedPitch[section.id]}</p>
+                <p className="text-gray-600 whitespace-pre-line">
+                  {editedPitch[section.id]}
+                </p>
               )}
             </div>
           ))}

@@ -44,7 +44,6 @@ export function CRMDashboard({
         const userId = firebase.auth().currentUser?.uid;
         if (!userId) return;
 
-        // Set up real-time listener on the user document
         const unsubscribe = db
           .collection("users")
           .doc(userId)

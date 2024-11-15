@@ -2,13 +2,12 @@ import React, { useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { Settings } from "lucide-react";
 import { UserSettingsModal } from "./settings/UserSettingsModal";
-import { User } from "../types";
 
 interface LayoutProps {
   children: React.ReactNode;
   activeRoute: string;
   onRouteChange: (route: string) => void;
-  user: User;
+  user: any;
   onLogout: () => void;
   connects: number;
 }

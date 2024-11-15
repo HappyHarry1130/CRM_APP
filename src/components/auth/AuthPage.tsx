@@ -27,18 +27,7 @@ export function AuthPage({ onLogin }: AuthPageProps) {
         if (user) {
           try {
             const userDoc = await db.collection("users").doc(user.uid).get();
-            const companyDoc = await db
-              .collection("companies")
-              .doc(user.uid)
-              .get();
-            const companyDetailsDoc = await db
-              .collection("companyDetails")
-              .doc(user.uid)
-              .get();
-
             const userData = userDoc.data();
-            const companyData = companyDoc.data();
-            const companyDetailsData = companyDetailsDoc.data();
 
             if (userData && companyData && companyDetailsData) {
               const userProfile: User = {
@@ -48,7 +37,7 @@ export function AuthPage({ onLogin }: AuthPageProps) {
                 lastName: userData.lastName,
                 title: userData.title,
                 company: {
-                  name: companyData.name,
+                  name: userData.companyData.name,
                   website: companyData.website,
                   size: companyData.size,
                   industry: companyData.industry,

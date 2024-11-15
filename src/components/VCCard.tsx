@@ -40,7 +40,6 @@ export function VCCard({ contact, onClick, disabled, connects }: VCCardProps) {
       `}
     >
       <div className="space-y-4 flex-1">
-        {/* Header */}
         <div className="flex justify-between items-start">
           <div>
             <h3 className="text-xl font-semibold text-gray-900">
@@ -58,14 +57,12 @@ export function VCCard({ contact, onClick, disabled, connects }: VCCardProps) {
           )}
         </div>
 
-        {/* Description */}
         {contact.description && (
           <p className="text-gray-600 text-sm line-clamp-2">
             {contact.description}
           </p>
         )}
 
-        {/* Investment Focus */}
         {(hasSectors || hasStages || hasGeoFocus) && (
           <div className="space-y-3">
             {hasSectors && (
@@ -133,7 +130,6 @@ export function VCCard({ contact, onClick, disabled, connects }: VCCardProps) {
           </div>
         )}
 
-        {/* Team Preview */}
         {hasTeam && (
           <div className="pt-3 border-t border-gray-100 mt-auto">
             <div className="flex items-center gap-2">

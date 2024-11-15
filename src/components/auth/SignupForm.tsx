@@ -84,39 +84,53 @@ export function SignupForm({
   trialEndDate.setDate(trialEndDate.getDate() + 10);
   const saveUserData = async (userData: SignupData, uid: string) => {
     try {
-      // Save user profile data to Firestore
-      await db.collection("users").doc(uid).set({
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        title: userData.title,
-        email: userData.email,
-        planType: "free",
-        connects: 10, // Initial free connects
-        trialEndDate: trialEndDate,
-        trialActive: true,
-        billingInterval: "monthly", // Default billing interval
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      });
+      await db
+        .collection("users")
+        .doc(uid)
+        .set({
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          title: userData.title,
+          email: userData.email,
+          planType: "free",
+          connects: 10,
+          trialEndDate: trialEndDate,
+          trialActive: true,
+          billingInterval: "monthly",
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          company: {
+            name: userData.companyName,
+            website: userData.website,
+            location: userData.location,
+            industry: userData.industry,
+            stage: userData.stage,
+            size: userData.size,
+          },
+          companyDetails: {
+            problem: userData.problem,
+            solution: userData.solution,
+            uniqueValue: userData.uniqueValue,
+            competition: userData.competition,
+          },
+        });
 
-      // Save company data to a separate collection
-      await db.collection("companies").doc(uid).set({
-        name: userData.companyName,
-        website: userData.website,
-        location: userData.location,
-        industry: userData.industry,
-        stage: userData.stage,
-        size: userData.size,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      });
+      // await db.collection("companies").doc(uid).set({
+      //   name: userData.companyName,
+      //   website: userData.website,
+      //   location: userData.location,
+      //   industry: userData.industry,
+      //   stage: userData.stage,
+      //   size: userData.size,
+      //   createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      // });
 
-      // Save company details to a separate collection
-      await db.collection("companyDetails").doc(uid).set({
-        problem: userData.problem,
-        solution: userData.solution,
-        uniqueValue: userData.uniqueValue,
-        competition: userData.competition,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      });
+      // await db.collection("companyDetails").doc(uid).set({
+      //   problem: userData.problem,
+      //   solution: userData.solution,
+      //   uniqueValue: userData.uniqueValue,
+      //   competition: userData.competition,
+      //   createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      // });
     } catch (error) {
       console.error("Error saving user data:", error);
       throw error;

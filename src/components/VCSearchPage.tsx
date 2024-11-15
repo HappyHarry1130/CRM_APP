@@ -93,6 +93,8 @@ export function VCSearchPage({
                 },
                 {}
               );
+              setSector(userData?.company?.industry || "");
+              setStage(userData?.company?.stage || "");
 
               setPipelineStatus(statusMap);
             }
@@ -108,23 +110,9 @@ export function VCSearchPage({
   }, []);
 
   useEffect(() => {
-    const userId = firebase.auth().currentUser?.uid;
-    if (!userId) return;
-    const unsubscribe = db
-      .collection("componies")
-      .doc(userId)
-      .onSnapshot((doc) => {
-        if (doc.exists) {
-          const companyData = doc.data();
-          setSector(companyData?.industry || "");
-          setStage(companyData?.stage || "");
-        }
-      });
-
-    return () => unsubscribe();
-  }, []);
-  useEffect(() => {
     const doInitialSearch = async () => {
+      console.log("sector", sector);
+      console.log("stage", stage);
       try {
         await performSearch(
           "venture capital technology investment",

@@ -25,8 +25,10 @@ interface NewsItem {
 }
 
 export function Dashboard({
+  user,
   onRouteChange,
 }: {
+  user: any;
   onRouteChange: (route: string) => void;
 }) {
   const [showNewsModal, setShowNewsModal] = useState(false);
@@ -34,7 +36,7 @@ export function Dashboard({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [industryPulse, setIndustryPulse] = useState<[]>([]);
-
+  const [query, setQuery] = useState("");
   const getGradient = (index: number) => {
     const gradients = [
       "from-blue-500/10 to-purple-500/10",
@@ -57,11 +59,13 @@ export function Dashboard({
     return colors[index % colors.length];
   };
   useEffect(() => {
+    console.log(user);
+    setQuery(user.company.problem);
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
-
+        console.log(query);
         // Fetch news
         const newsResponse = await fetch("http://20.127.158.98:8012/news", {
           method: "POST",
@@ -69,12 +73,10 @@ export function Dashboard({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            company_description:
-              "AI-powered startup growth platform focusing on helping startups connect with VCs and media contacts",
+            company_description: query,
           }),
         });
 
-        // Fetch pulse data
         const pulseResponse = await fetch(
           "https://api.iylavista.com/api/dashboard/pulse",
           {
@@ -83,8 +85,7 @@ export function Dashboard({
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              company_description:
-                "AI-powered startup growth platform focusing on helping startups connect with VCs and media contacts",
+              company_description: query,
             }),
           }
         );
@@ -110,28 +111,10 @@ export function Dashboard({
     };
 
     fetchData();
-  }, []);
+  }, [query]);
 
-  // const industryPulse1 = [
-  //   {
-  //     number: "55M",
-  //     fact: "Downloads For Buddy.ai",
-  //     url: "https://techcrunch.com/2024/10/31/buddy-ai-is-using-ai-and-gaming-to-help-children-learn-english-as-a-second-language/",
-  //   },
-  //   {
-  //     number: "$259",
-  //     fact: "AI Menopause Kit Available",
-  //     url: "https://hitconsultant.net/2024/10/18/mira-launches-ai-powered-menopause-transitions-kit/",
-  //   },
-  //   {
-  //     number: "1,245",
-  //     fact: "AI Deals In Q3 2024",
-  //     url: "https://www.cbinsights.com/research/report/ai-trends-q3-2024/",
-  //   },
-  // ];
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      {/* Welcome Banner */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-8 mb-8 text-white">
         <div className="max-w-3xl">
           <h1 className="text-3xl font-bold mb-2">Welcome back!</h1>
@@ -141,7 +124,6 @@ export function Dashboard({
         </div>
       </div>
 
-      {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <button
           onClick={() => onRouteChange("crm")}
