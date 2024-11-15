@@ -1,7 +1,7 @@
-import React from 'react';
-import { FilterGroup } from './FilterGroup';
-import { useFacets } from '../../hooks/useFacets';
-import { FilterState } from '../../types/api';
+import React from "react";
+import { FilterGroup } from "./FilterGroup";
+import { useFacets } from "../../hooks/useFacets";
+import { FilterState } from "../../types/api";
 
 interface FilterDropdownPanelProps {
   activeFilters: FilterState;
@@ -9,7 +9,7 @@ interface FilterDropdownPanelProps {
   onClearFilters: () => void;
   onApplyFilters: () => void;
   onClose: () => void;
-  type?: 'vc' | 'media';
+  type?: "vc" | "media";
 }
 
 export function FilterDropdownPanel({
@@ -18,7 +18,7 @@ export function FilterDropdownPanel({
   onClearFilters,
   onApplyFilters,
   onClose,
-  type = 'vc'
+  type = "vc",
 }: FilterDropdownPanelProps) {
   const { facets, loading } = useFacets();
 
@@ -45,32 +45,32 @@ export function FilterDropdownPanel({
     <div className="absolute right-0 top-12 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
       <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
         <div className="p-4 space-y-4">
-          {type === 'vc' ? (
+          {type === "vc" ? (
             // VC Filters
             <>
               <FilterGroup
                 title="Investment Stage"
                 items={facets.stages}
                 selectedValue={activeFilters.stage}
-                onChange={(value) => onFilterChange('stage', value)}
+                onChange={(value) => onFilterChange("stage", value)}
               />
               <FilterGroup
                 title="Region"
                 items={facets.regions}
                 selectedValue={activeFilters.region}
-                onChange={(value) => onFilterChange('region', value)}
+                onChange={(value) => onFilterChange("region", value)}
               />
               <FilterGroup
                 title="Sector"
                 items={facets.sectors}
                 selectedValue={activeFilters.sector}
-                onChange={(value) => onFilterChange('sector', value)}
+                onChange={(value) => onFilterChange("sector", value)}
               />
               <FilterGroup
                 title="Location"
                 items={facets.geographical_focus}
                 selectedValue={activeFilters.location}
-                onChange={(value) => onFilterChange('location', value)}
+                onChange={(value) => onFilterChange("location", value)}
               />
             </>
           ) : (
@@ -80,31 +80,31 @@ export function FilterDropdownPanel({
                 title="Media Type"
                 items={facets.type}
                 selectedValue={activeFilters.type}
-                onChange={(value) => onFilterChange('type', value)}
+                onChange={(value) => onFilterChange("type", value)}
               />
               <FilterGroup
                 title="Category"
                 items={facets.category}
                 selectedValue={activeFilters.category}
-                onChange={(value) => onFilterChange('category', value)}
+                onChange={(value) => onFilterChange("category", value)}
               />
               <FilterGroup
                 title="City"
-                items={facets['location/city']}
+                items={facets["location/city"]}
                 selectedValue={activeFilters.city}
-                onChange={(value) => onFilterChange('city', value)}
+                onChange={(value) => onFilterChange("city", value)}
               />
               <FilterGroup
                 title="State"
-                items={facets['location/state']}
+                items={facets["location/state"]}
                 selectedValue={activeFilters.state}
-                onChange={(value) => onFilterChange('state', value)}
+                onChange={(value) => onFilterChange("state", value)}
               />
               <FilterGroup
                 title="Country"
-                items={facets['location/country']}
+                items={facets["location/country"]}
                 selectedValue={activeFilters.country}
-                onChange={(value) => onFilterChange('country', value)}
+                onChange={(value) => onFilterChange("country", value)}
               />
             </>
           )}

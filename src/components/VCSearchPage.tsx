@@ -36,6 +36,8 @@ export function VCSearchPage({
   onRemoveFromPipeline,
 }: VCSearchPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [sector, setSector] = useState("");
+  const [stage, setStage] = useState("");
   const [isAIRecommended, setIsAIRecommended] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const { results, loading, error, performSearch, performAISearch } =
@@ -106,16 +108,37 @@ export function VCSearchPage({
   }, []);
 
   useEffect(() => {
+    const userId = firebase.auth().currentUser?.uid;
+    if (!userId) return;
+    const unsubscribe = db
+      .collection("componies")
+      .doc(userId)
+      .onSnapshot((doc) => {
+        if (doc.exists) {
+          const companyData = doc.data();
+          setSector(companyData?.industry || "");
+          setStage(companyData?.stage || "");
+        }
+      });
+
+    return () => unsubscribe();
+  }, []);
+  useEffect(() => {
     const doInitialSearch = async () => {
       try {
-        await performSearch("venture capital technology investment", "vc");
+        await performSearch(
+          "venture capital technology investment",
+          "vc",
+          sector,
+          stage
+        );
       } catch (error) {
         console.error("Initial search error:", error);
       }
     };
 
     doInitialSearch();
-  }, []);
+  }, [sector, stage]);
 
   const handleContactClick = async (contact: VCContact) => {
     const userId = firebase.auth().currentUser?.uid;

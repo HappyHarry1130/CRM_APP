@@ -7,11 +7,13 @@ export function useSearch() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const performSearch = useCallback(async (query: string, type: string) => {
+  const performSearch = useCallback(async (query: string, type: string, sector: string, stage: string) => {
     setLoading(true);
     setError(null);
+    console.log("sector", sector);
+    console.log("stage", stage);
     try {
-      const data = await search(query, type);
+      const data = await search(query, type, sector, stage);
       setResults(data.results);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred while searching');

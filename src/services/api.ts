@@ -1,5 +1,6 @@
 import { SearchResponse, Facets, MediaContact, VCContact } from '../types/api';
-
+import firebase from '../utilies/firebase/firebaseConfig'
+import db from '../utilies/firebase/firebaseConfig'
 // Mock data for VC contacts
 export const vcContacts: VCContact[] = [
   {
@@ -263,63 +264,67 @@ export async function aiSearch(context: string, type: string): Promise<SearchRes
   });
 }
 
-export async function search(query: string, type: string): Promise<SearchResponse> {
-  const userSectors = ["Social Impact", "Technology", "Financial Services"];
-  const userStages = ["Seed round", "Series A", "Series B", "Series C"];
+export async function search(query: string, type: string, sector: string = '', stage: string = ''): Promise<SearchResponse> {
+  try {
 
-  let requestPayload;
-  let apiUrl;
 
-  if (type === 'media') {
-    apiUrl = 'http://20.127.158.98:8011/search';
-    requestPayload = {
-      query,
-      top: 10,
-      max_results: 50,
-      filters: "", // Add your media-specific filters here if needed
-      facets: [], // Add specific facets if needed
-      skip: 0,
-      page: 1
+    console.log("Fetched user sectors:", sector);
+    console.log("Fetched user stages:", stage);
+
+    let requestPayload;
+    let apiUrl;
+
+    if (type === 'media') {
+      apiUrl = 'http://20.127.158.98:8011/search';
+      requestPayload = {
+        query,
+        top: 10,
+        max_results: 50,
+        filters: "",
+        facets: [],
+        skip: 0,
+        page: 1
+      };
+    } else {
+      apiUrl = 'http://20.127.158.98:8010/search';
+      requestPayload = {
+        query: `Investors in ${sector} with ${stage}`,
+        filters: sector.length > 0 && stage.length > 0
+          ? `sectors/any(s: s eq '${sector}') and stages/any(st: st eq '${stage}')`
+          : "",
+        max_results: 50,
+      };
+    }
+
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestPayload),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from the server.');
+    }
+
+    const data = await response.json();
+    const results = data.results;
+    const userSectors = ['Financial Services', 'Social Impact', 'Technology'];
+    return {
+      results,
+      matched_sectors: type === 'vc' ? userSectors : [],
+      generated_query: query
     };
-  } else {
-    apiUrl = 'http://20.127.158.98:8010/search';
-    requestPayload = {
-      query: `Investors in ${userSectors} with ${userStages}`,
-      filters: "sectors/any(s: s eq 'Artificial Intelligence') and stages/any(st: st eq 'Series A')",
-      max_results: 50,
+
+  } catch (error) {
+    console.error("Error during search:", error);
+    return {
+      results: [],
+      matched_sectors: [],
+      generated_query: query
     };
   }
-
-  return new Promise(async (resolve) => {
-    try {
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestPayload),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch data from the server.');
-      }
-
-      const data = await response.json();
-      const results = data.results;
-      resolve({
-        results,
-        matched_sectors: type === 'vc' ? ["Social Impact", "Technology", "Financial Services"] : [],
-        generated_query: query
-      });
-    } catch (error) {
-      console.error("Error during search:", error);
-      resolve({
-        results: [],
-        matched_sectors: [],
-        generated_query: query
-      });
-    }
-  });
 }
 
 export async function getFacets(type: 'vc' | 'media' = 'vc'): Promise<Facets> {
