@@ -80,7 +80,8 @@ export function SignupForm({
       }
     }
   };
-
+  const trialEndDate = new Date();
+  trialEndDate.setDate(trialEndDate.getDate() + 10);
   const saveUserData = async (userData: SignupData, uid: string) => {
     try {
       // Save user profile data to Firestore
@@ -89,6 +90,11 @@ export function SignupForm({
         lastName: userData.lastName,
         title: userData.title,
         email: userData.email,
+        planType: "free",
+        connects: 10, // Initial free connects
+        trialEndDate: trialEndDate,
+        trialActive: true,
+        billingInterval: "monthly", // Default billing interval
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       });
 

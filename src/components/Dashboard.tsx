@@ -10,6 +10,7 @@ import {
   LineChart,
   Search,
   X,
+  ArrowUpRight,
 } from "lucide-react";
 import { NewsModal } from "./NewsModal";
 
@@ -22,6 +23,7 @@ interface NewsItem {
   url: string;
   date: string;
 }
+
 export function Dashboard({
   onRouteChange,
 }: {
@@ -31,62 +33,102 @@ export function Dashboard({
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [industryPulse, setIndustryPulse] = useState<[]>([]);
 
-  useEffect(() => {
-    fetchNews();
-  }, []);
-
-  const fetchNews = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await fetch("http://20.127.158.98:8012/news", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          company_description:
-            "AI-powered startup growth platform focusing on helping startups connect with VCs and media contacts",
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch news");
-      }
-
-      const data = await response.json();
-      setNewsItems(data.news_items);
-    } catch (err) {
-      setError("Failed to load news items");
-      console.error("Error fetching news:", err);
-    } finally {
-      setLoading(false);
-    }
+  const getGradient = (index: number) => {
+    const gradients = [
+      "from-blue-500/10 to-purple-500/10",
+      "from-green-500/10 to-emerald-500/10",
+      "from-orange-500/10 to-red-500/10",
+      "from-indigo-500/10 to-blue-500/10",
+      "from-pink-500/10 to-rose-500/10",
+    ];
+    return gradients[index % gradients.length];
   };
 
-  const industryPulse = [
-    {
-      metric: "AI/ML Funding",
-      trend: "+15%",
-      description: "Month-over-month increase in AI/ML startup investments",
-      sentiment: "positive",
-    },
-    {
-      metric: "Enterprise Tech",
-      trend: "+8%",
-      description: "Growing enterprise adoption of AI solutions",
-      sentiment: "positive",
-    },
-    {
-      metric: "Market Competition",
-      trend: "+12%",
-      description: "New entrants in enterprise AI space",
-      sentiment: "neutral",
-    },
-  ];
+  const getNumberColor = (index: number) => {
+    const colors = [
+      "text-blue-600",
+      "text-green-600",
+      "text-orange-600",
+      "text-indigo-600",
+      "text-pink-600",
+    ];
+    return colors[index % colors.length];
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
+        // Fetch news
+        const newsResponse = await fetch("http://20.127.158.98:8012/news", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            company_description:
+              "AI-powered startup growth platform focusing on helping startups connect with VCs and media contacts",
+          }),
+        });
+
+        // Fetch pulse data
+        const pulseResponse = await fetch(
+          "https://api.iylavista.com/api/dashboard/pulse",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              company_description:
+                "AI-powered startup growth platform focusing on helping startups connect with VCs and media contacts",
+            }),
+          }
+        );
+
+        if (!newsResponse.ok || !pulseResponse.ok) {
+          throw new Error("Failed to fetch data");
+        }
+
+        const [newsData, pulseData] = await Promise.all([
+          newsResponse.json(),
+          pulseResponse.json(),
+        ]);
+
+        setNewsItems(newsData.news_items);
+        setIndustryPulse(pulseData.facts);
+        console.log(pulseData);
+      } catch (err) {
+        setError("Failed to load data");
+        console.error("Error fetching data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // const industryPulse1 = [
+  //   {
+  //     number: "55M",
+  //     fact: "Downloads For Buddy.ai",
+  //     url: "https://techcrunch.com/2024/10/31/buddy-ai-is-using-ai-and-gaming-to-help-children-learn-english-as-a-second-language/",
+  //   },
+  //   {
+  //     number: "$259",
+  //     fact: "AI Menopause Kit Available",
+  //     url: "https://hitconsultant.net/2024/10/18/mira-launches-ai-powered-menopause-transitions-kit/",
+  //   },
+  //   {
+  //     number: "1,245",
+  //     fact: "AI Deals In Q3 2024",
+  //     url: "https://www.cbinsights.com/research/report/ai-trends-q3-2024/",
+  //   },
+  // ];
   return (
     <div className="p-6 max-w-7xl mx-auto">
       {/* Welcome Banner */}
@@ -112,7 +154,7 @@ export function Dashboard({
                   <Inbox className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Pipeline111
+                  Pipeline
                 </h3>
               </div>
               <p className="text-gray-600">Manage your outreach</p>
@@ -178,59 +220,38 @@ export function Dashboard({
           </div>
 
           <div className="space-y-4">
-            {loading ? (
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                <p className="mt-2 text-gray-600">Loading news...</p>
-              </div>
-            ) : error ? (
-              <div className="text-center py-8 text-red-600">{error}</div>
-            ) : newsItems.length === 0 ? (
-              <div className="text-center py-8 text-gray-600">
-                No news items available
-              </div>
-            ) : (
-              newsItems.slice(0, 2).map((item) => (
-                <div
-                  key={item.title}
-                  className="bg-white rounded-xl p-6 shadow-sm border border-gray-100"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">
-                          {item.category}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          {item.date}
-                        </span>
-                      </div>
-                      <h3 className="font-semibold text-gray-900">
-                        {item.title}
-                      </h3>
-                      <p className="text-sm text-gray-600">{item.subtitle}</p>
-                      <div className="flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-purple-600" />
-                        <span className="text-sm text-gray-600">
-                          {item.relevance}
-                        </span>
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        Source: {item.source}
-                      </div>
+            {newsItems.slice(0, 2).map((item) => (
+              <div
+                key={item.title}
+                className="bg-white rounded-xl p-6 shadow-sm border border-gray-100"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                        {item.category}
+                      </span>
+                      <span className="text-sm text-gray-500">{item.time}</span>
                     </div>
-                    <a
-                      href={item.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-400 hover:text-gray-600"
-                    >
-                      <ArrowRight className="w-5 h-5" />
-                    </a>
+                    <h3 className="font-semibold text-gray-900">
+                      {item.title}
+                    </h3>
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-purple-600" />
+                      <span className="text-sm text-gray-600">
+                        {item.relevance}
+                      </span>
+                    </div>
                   </div>
+                  <a
+                    href={item.url}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <ArrowRight className="w-5 h-5" />
+                  </a>
                 </div>
-              ))
-            )}
+              </div>
+            ))}
           </div>
         </div>
 
@@ -242,32 +263,41 @@ export function Dashboard({
             </h2>
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <LineChart className="w-4 h-4" />
-              <span>Last 30 days</span>
+              <span>Latest Updates</span>
             </div>
           </div>
 
-          <div className="space-y-4">
-            {industryPulse.map((item) => (
-              <div
-                key={item.metric}
-                className="bg-white rounded-xl p-6 shadow-sm border border-gray-100"
+          <div className="space-y-3">
+            {industryPulse.map((item, index) => (
+              <a
+                key={index}
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block group"
               >
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-medium text-gray-900">{item.metric}</h3>
-                  <span
-                    className={`text-sm font-medium px-2 py-1 rounded ${
-                      item.sentiment === "positive"
-                        ? "text-green-700 bg-green-50"
-                        : item.sentiment === "negative"
-                        ? "text-red-700 bg-red-50"
-                        : "text-yellow-700 bg-yellow-50"
-                    }`}
-                  >
-                    {item.trend}
-                  </span>
+                <div
+                  className={`mb-[15px] h-[100px] bg-gradient-to-r ${getGradient(
+                    index
+                  )} bg-white rounded-lg p-4 border border-gray-100 transition-all duration-200 hover:scale-102 hover:shadow-md`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1 min-w-0">
+                      <span
+                        className={`text-xl font-bold ${getNumberColor(
+                          index
+                        )} block truncate`}
+                      >
+                        {item.fact}
+                      </span>
+                      <p className="text-sm text-gray-800 font-medium mt-0.5 truncate">
+                        {item.text}
+                      </p>
+                    </div>
+                    <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors flex-shrink-0 ml-3" />
+                  </div>
                 </div>
-                <p className="text-sm text-gray-600">{item.description}</p>
-              </div>
+              </a>
             ))}
           </div>
         </div>

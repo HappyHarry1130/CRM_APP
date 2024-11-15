@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { X, User, CreditCard, Check, LogOut } from "lucide-react";
 import { User as UserType } from "../../types";
+import { db } from "../../utilies/firebase/firebaseConfig";
+import firebase from "../../utilies/firebase/firebaseConfig";
+import { useEffect } from "react";
 
 interface UserSettingsModalProps {
   isOpen: boolean;
@@ -59,10 +62,30 @@ export function UserSettingsModal({
 }: UserSettingsModalProps) {
   const [activeTab, setActiveTab] = useState<"profile" | "billing">("profile");
   const [isEditing, setIsEditing] = useState(false);
-  const [billing] = useState<BillingInfo>({
-    plan: "pro",
+  const [billing, setBilling] = useState<BillingInfo>({
+    plan: "free",
     interval: "annual",
   });
+
+  useEffect(() => {
+    if (!user?.uid) return;
+
+    const unsubscribe = db
+      .collection("users")
+      .doc(user.uid)
+      .onSnapshot((doc) => {
+        if (doc.exists) {
+          const userData = doc.data();
+          setBilling({
+            plan: userData?.planType || "free",
+            interval: userData?.billingInterval || "annual",
+          });
+          console.log("Current plan:", userData?.planType);
+        }
+      });
+
+    return () => unsubscribe();
+  }, [user?.uid]);
 
   const [tempProfile, setTempProfile] = useState(user);
 

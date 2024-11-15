@@ -55,7 +55,7 @@ export function Layout({
                 </div>
                 <div className="text-sm">
                   <p className="font-medium text-gray-700">{`${user.firstName} ${user.lastName}`}</p>
-                  <p className="text-gray-500">{`Connects: ${connects}`}</p>
+                  <p className="text-gray-500">{`Connects:${connects}`}</p>
                 </div>
               </div>
             </div>

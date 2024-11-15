@@ -45,10 +45,31 @@ export function VCSearchPage({
   const [selectedContact, setSelectedContact] = useState<VCContact | null>(
     null
   );
+  const [userConnects, setUserConnects] = useState<number>(() => {
+    const savedConnects = localStorage.getItem("userConnects");
+    return savedConnects ? parseInt(savedConnects, 10) : 0;
+  });
 
   const [pipelineStatus, setPipelineStatus] = useState<{
     [key: string]: boolean;
   }>({});
+
+  useEffect(() => {
+    const userId = firebase.auth().currentUser?.uid;
+    if (!userId) return;
+
+    const unsubscribe = db
+      .collection("users")
+      .doc(userId)
+      .onSnapshot((doc) => {
+        if (doc.exists) {
+          const connects = doc.data()?.connects ?? 0;
+          setUserConnects(connects);
+        }
+      });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const fetchPipelineStatus = async () => {
@@ -83,6 +104,7 @@ export function VCSearchPage({
 
     fetchPipelineStatus();
   }, []);
+
   useEffect(() => {
     const doInitialSearch = async () => {
       try {
@@ -94,6 +116,30 @@ export function VCSearchPage({
 
     doInitialSearch();
   }, []);
+
+  const handleContactClick = async (contact: VCContact) => {
+    const userId = firebase.auth().currentUser?.uid;
+    if (!userId) return;
+
+    if (userConnects <= 0) {
+      toast.error("You've run out of connects! Please upgrade your plan.");
+      return;
+    }
+
+    try {
+      await db
+        .collection("users")
+        .doc(userId)
+        .update({
+          connects: firebase.firestore.FieldValue.increment(-1),
+        });
+
+      setSelectedContact(contact);
+    } catch (error) {
+      console.error("Error updating connects:", error);
+      toast.error("Failed to update connects");
+    }
+  };
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -224,7 +270,9 @@ export function VCSearchPage({
               <VCCard
                 key={contact.id}
                 contact={contact as VCContact}
-                onClick={() => setSelectedContact(contact as VCContact)}
+                onClick={() => handleContactClick(contact as VCContact)}
+                disabled={userConnects <= 0}
+                connects={userConnects}
               />
             ))}
           </div>

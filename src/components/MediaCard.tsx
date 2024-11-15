@@ -25,9 +25,16 @@ interface MediaContact {
 interface MediaCardProps {
   contact: MediaContact;
   onClick: () => void;
+  disabled: boolean;
+  connects: number;
 }
 
-export function MediaCard({ contact, onClick }: MediaCardProps) {
+export function MediaCard({
+  contact,
+  onClick,
+  disabled,
+  connects,
+}: MediaCardProps) {
   const location = [
     contact.location?.city,
     contact.location?.state,
@@ -46,8 +53,21 @@ export function MediaCard({ contact, onClick }: MediaCardProps) {
 
   return (
     <div
-      onClick={onClick}
-      className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 p-6 cursor-pointer border border-gray-100 h-full flex flex-col"
+      onClick={disabled ? undefined : onClick}
+      className={`
+        relative 
+        rounded-lg 
+        border 
+        border-gray-200 
+        bg-white 
+        p-6 
+        transition-shadow 
+        ${
+          disabled
+            ? "opacity-50 cursor-not-allowed"
+            : "cursor-pointer hover:shadow-lg"
+        }
+      `}
     >
       <div className="space-y-4 flex-1">
         {/* Header with Type Badge and Match Score */}
@@ -126,6 +146,14 @@ export function MediaCard({ contact, onClick }: MediaCardProps) {
           </div>
         )}
       </div>
+
+      {disabled && (
+        <div className="absolute inset-0 bg-gray-900/10 flex items-center justify-center rounded-lg">
+          <p className="text-sm text-gray-600 bg-white px-4 py-2 rounded-md">
+            No connects remaining
+          </p>
+        </div>
+      )}
     </div>
   );
 }

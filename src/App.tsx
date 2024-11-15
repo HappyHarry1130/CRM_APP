@@ -31,8 +31,8 @@ function App() {
     return savedTasks ? JSON.parse(savedTasks) : [];
   });
   const [connects, setConnects] = useState<number>(() => {
-    const savedConnects = localStorage.getItem("connects");
-    return savedConnects ? parseInt(savedConnects) : 0;
+    const savedConnects = localStorage.getItem("userConnects");
+    return savedConnects ? parseInt(savedConnects, 10) : 0;
   });
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,6 +72,7 @@ function App() {
               console.log("User data:", userData);
               const connects = userData?.connects || [];
               setConnects(connects);
+              localStorage.setItem("connects", connects.toString());
               const contacts = userData?.contact_info || [];
               console.log("All contacts:", contacts);
 
@@ -130,6 +131,34 @@ function App() {
 
     fetchTasks();
   }, [user]);
+
+  useEffect(() => {
+    const userId = user?.uid;
+    if (!userId) return;
+
+    console.log("Setting up connects listener for user:", userId);
+
+    const unsubscribe = db
+      .collection("users")
+      .doc(userId)
+      .onSnapshot(
+        (doc) => {
+          if (doc.exists) {
+            const userConnects = doc.data()?.connects;
+            console.log("Connects updated:", userConnects);
+            setConnects(userConnects);
+          }
+        },
+        (error) => {
+          console.error("Error listening to connects:", error);
+        }
+      );
+
+    return () => {
+      console.log("Cleaning up connects listener");
+      unsubscribe();
+    };
+  }, [user?.uid]);
 
   const updateTasks = (newTasks: Task[]) => {
     localStorage.setItem("tasks", JSON.stringify(newTasks));

@@ -8,6 +8,7 @@ import firebase from "../utilies/firebase/firebaseConfig";
 import { db } from "../utilies/firebase/firebaseConfig";
 import { MediaCard } from "./MediaCard";
 import { MediaDetailModal } from "./MediaDetailModal";
+import { toast } from "react-hot-toast";
 
 interface MediaSearchPageProps {
   onAddToPipeline?: (contact: MediaContact) => void; // Changed from VCContact to MediaContact
@@ -49,6 +50,11 @@ export function MediaSearchPage({
   const [pipelineStatus, setPipelineStatus] = useState<{
     [key: string]: boolean;
   }>({});
+
+  const [userConnects, setUserConnects] = useState<number>(() => {
+    const savedConnects = localStorage.getItem("userConnects");
+    return savedConnects ? parseInt(savedConnects, 10) : 0;
+  });
 
   useEffect(() => {
     const fetchPipelineStatus = async () => {
@@ -96,6 +102,31 @@ export function MediaSearchPage({
 
     doInitialSearch();
   }, [performSearch]); // Added performSearch to dependency array
+
+  useEffect(() => {
+    const userId = firebase.auth().currentUser?.uid;
+    if (!userId) return;
+
+    const unsubscribe = db
+      .collection("users")
+      .doc(userId)
+      .onSnapshot((doc) => {
+        if (doc.exists) {
+          const connects = doc.data()?.connects ?? 0;
+          setUserConnects(connects);
+          localStorage.setItem("userConnects", connects.toString());
+          console.log("Updated connects:", connects);
+        }
+      });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log("Current userConnects:", userConnects);
+  }, [userConnects]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -158,6 +189,29 @@ export function MediaSearchPage({
 
   const isContactInPipeline = (contactId: string) => {
     return pipelineStatus[contactId] || false;
+  };
+
+  const handleContactClick = async (contact: MediaContact) => {
+    if (userConnects <= 0) {
+      toast.error("You've run out of connects! Please upgrade your plan.");
+      return;
+    }
+
+    const userId = firebase.auth().currentUser?.uid;
+    if (!userId) return;
+
+    try {
+      await db
+        .collection("users")
+        .doc(userId)
+        .update({
+          connects: firebase.firestore.FieldValue.increment(-1),
+        });
+
+      setSelectedContact(contact);
+    } catch (error) {
+      console.error("Error updating connects:", error);
+    }
   };
 
   return (
@@ -238,7 +292,9 @@ export function MediaSearchPage({
               <MediaCard
                 key={contact.id}
                 contact={contact as MediaContact}
-                onClick={() => setSelectedContact(contact as MediaContact)}
+                onClick={() => handleContactClick(contact as MediaContact)}
+                disabled={userConnects <= 0}
+                connects={userConnects}
               />
             ))}
           </div>
