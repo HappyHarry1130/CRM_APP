@@ -67,18 +67,24 @@ export function Dashboard({
         setError(null);
         console.log(query);
         // Fetch news
-        const newsResponse = await fetch("http://20.127.158.98:8012/news", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            company_description: query,
-          }),
-        });
+
+        console.log("API URL:", import.meta.env.VITE_API_URL);
+
+        const newsResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/dashboard/news`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              company_description: query,
+            }),
+          }
+        );
 
         const pulseResponse = await fetch(
-          "https://api.iylavista.com/api/dashboard/pulse",
+          `${import.meta.env.VITE_API_URL}/dashboard/pulse`,
           {
             method: "POST",
             headers: {

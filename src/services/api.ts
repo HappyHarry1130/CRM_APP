@@ -223,8 +223,8 @@ const mockMediaFacets: Facets = {
 
 export async function aiSearch(context: string, type: string): Promise<SearchResponse> {
   let apiUrl = "";
-  if (type === "media") { apiUrl = "http://20.127.158.98:8011/ai-search" }
-  else { apiUrl = "http://20.127.158.98:8010/ai-search" }
+  if (type === "media") { apiUrl = `${import.meta.env.VITE_API_URL}/media-contacts/ai-search` }
+  else { apiUrl = `${import.meta.env.VITE_API_URL}/vc-contacts/ai-search` }
   const requestPayload = {
     context,
     top: 10,
@@ -275,7 +275,7 @@ export async function search(query: string, type: string, sector: string = '', s
     let apiUrl;
 
     if (type === 'media') {
-      apiUrl = 'http://20.127.158.98:8011/search';
+      apiUrl = `${import.meta.env.VITE_API_URL}/media-contacts/search`;
       requestPayload = {
         query,
         top: 10,
@@ -286,7 +286,7 @@ export async function search(query: string, type: string, sector: string = '', s
         page: 1
       };
     } else {
-      apiUrl = 'http://20.127.158.98:8010/search';
+      apiUrl = `${import.meta.env.VITE_API_URL}/vc-contacts/search`;
       requestPayload = {
         query: `Investors in ${sector} with ${stage}`,
         filters: sector.length > 0 && stage.length > 0
