@@ -60,7 +60,7 @@ export function Dashboard({
   };
   useEffect(() => {
     console.log(user);
-    setQuery(user.company.problem);
+    setQuery(user.companyDetails.problem);
     const fetchData = async () => {
       try {
         setLoading(true);
