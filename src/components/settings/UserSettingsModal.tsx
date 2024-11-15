@@ -101,15 +101,18 @@ export function UserSettingsModal({
 
   const handleSelectPlan = (planId: string) => {
     console.log(user);
-    fetch("http://localhost:5000/api/v1/create-subscription-checkout-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      mode: "cors",
-      body: JSON.stringify({
-        plan: PLANS.find((p) => p.id === planId)?.price,
-        customerId: user.id,
-      }),
-    })
+    fetch(
+      "https://yaxlyu982rsci2-8000.proxy.runpod.net/api/v1/create-subscription-checkout-session",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        mode: "cors",
+        body: JSON.stringify({
+          plan: PLANS.find((p) => p.id === planId)?.price,
+          customerId: user.id,
+        }),
+      }
+    )
       .then((res) => {
         if (res.ok) {
           return res.json();

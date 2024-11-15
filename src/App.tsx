@@ -301,16 +301,19 @@ function App() {
     investor.contactType = contactType;
     console.log("Contact type:", contactType);
     try {
-      const response = await fetch("http://localhost:5000/api/v1/add_contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contact_info: investor,
-          firebaseId: firebaseId,
-        }),
-      });
+      const response = await fetch(
+        "https://yaxlyu982rsci2-8000.proxy.runpod.net/api/v1/add_contact",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contact_info: investor,
+            firebaseId: firebaseId,
+          }),
+        }
+      );
 
       const result = await response.json();
       if (response.ok) {
@@ -401,7 +404,7 @@ function App() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/remove_contact",
+        "https://yaxlyu982rsci2-8000.proxy.runpod.net/api/v1/remove_contact",
         {
           method: "DELETE",
           headers: {

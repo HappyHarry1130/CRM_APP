@@ -35,13 +35,16 @@ const Success = () => {
   }, []);
 
   const handlePaymentSuccess = () => {
-    fetch("http://localhost:5000/api/v1/payment-success", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ sessionId: sessionId, firebaseId: userId }),
-    })
+    fetch(
+      "https://yaxlyu982rsci2-8000.proxy.runpod.net/api/v1/payment-success",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ sessionId: sessionId, firebaseId: userId }),
+      }
+    )
       .then((res) => {
         if (res.ok) return res.json();
         return res.json().then((json) => Promise.reject(json));
