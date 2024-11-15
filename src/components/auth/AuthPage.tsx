@@ -29,7 +29,7 @@ export function AuthPage({ onLogin }: AuthPageProps) {
             const userDoc = await db.collection("users").doc(user.uid).get();
             const userData = userDoc.data();
 
-            if (userData && companyData && companyDetailsData) {
+            if (userData && userData.company) {
               const userProfile: User = {
                 id: user.uid,
                 email: user.email || "",
@@ -37,21 +37,24 @@ export function AuthPage({ onLogin }: AuthPageProps) {
                 lastName: userData.lastName,
                 title: userData.title,
                 company: {
-                  name: userData.companyData.name,
-                  website: companyData.website,
-                  size: companyData.size,
-                  industry: companyData.industry,
-                  stage: companyData.stage,
-                  description: companyDetailsData.description || "",
+                  name: userData.company.name,
+                  website: userData.company.website,
+                  size: userData.company.size,
+                  industry: userData.company.industry,
+                  stage: userData.company.stage,
+                  description: userData.company.description || "",
                   location: {
-                    city: companyData.location?.split(",")[0]?.trim() || "",
-                    state: companyData.location?.split(",")[1]?.trim() || "",
-                    country: companyData.location?.split(",")[2]?.trim() || "",
+                    city:
+                      userData.company.location?.split(",")[0]?.trim() || "",
+                    state:
+                      userData.company.location?.split(",")[1]?.trim() || "",
+                    country:
+                      userData.company.location?.split(",")[2]?.trim() || "",
                   },
-                  problem: companyDetailsData.problem,
-                  solution: companyDetailsData.solution,
-                  uniqueValue: companyDetailsData.uniqueValue,
-                  competition: companyDetailsData.competition,
+                  problem: userData.company.problem,
+                  solution: userData.company.solution,
+                  uniqueValue: userData.company.uniqueValue,
+                  competition: userData.company.competition,
                 },
                 createdAt:
                   userData.createdAt?.toDate().toISOString() ||
